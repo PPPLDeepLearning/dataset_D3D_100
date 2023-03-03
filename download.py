@@ -46,7 +46,6 @@ os.environ["main_path"] = "atlas.gat.com::"
 # Load dataset definitions into file
 with open(args.dataset_def, "r") as stream:
     dataset_def = yaml.safe_load(stream)
-print(dataset_def)
 
 ## Separate between three kinds of data. Each kind requires separate download logic, 
 ## to pull from from either MDS or PTDATA, and handle 0d vs 1d
@@ -69,6 +68,7 @@ with open(args.signal_defs_0d, "r") as stream:
 
 # Open Connection to D3D atlas server
 conn = mds.Connection("atlas.gat.com")
+ctr = 0
 for shotnr in dataset_def["shots"].keys():
     logging.info(f"{shotnr} - Processing")
 
@@ -160,6 +160,21 @@ for shotnr in dataset_def["shots"].keys():
 
                     logging.info(f"Stored PTDATA {node} into {grp}")
 
-    break
+        # Iterate over all predictors and find the shortest time-base
+        tmin = 100_000
+        for k in df.keys():
+            if k == "target_ttd":
+                continue
+            t_k = df[k]["xdata"][-1]
+            if t_k < tmin:
+                tmin = t_k
+        logging.info(f"{shotnr}: tmin = {tmin} ms")
+        df.attrs.create("tmin", tmin)
+
+    ctr = ctr + 1
+    if ctr > 8:
+        break
+
+    
 # # end of file downloading.py
                                                 

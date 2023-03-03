@@ -11,3 +11,4 @@ $ instantiate.sh
 ```
 
 This will fetch the data from D3D and calculate normalizations.
+Make sure to run this script on a machine that has access to the D3D MDSplus server.
