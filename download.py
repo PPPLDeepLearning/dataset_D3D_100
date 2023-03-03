@@ -46,6 +46,7 @@ os.environ["main_path"] = "atlas.gat.com::"
 # Load dataset definitions into file
 with open(args.dataset_def, "r") as stream:
     dataset_def = yaml.safe_load(stream)
+print(dataset_def)
 
 ## Separate between three kinds of data. Each kind requires separate download logic, 
 ## to pull from from either MDS or PTDATA, and handle 0d vs 1d
@@ -71,92 +72,94 @@ conn = mds.Connection("atlas.gat.com")
 for shotnr in dataset_def["shots"].keys():
     logging.info(f"{shotnr} - Processing")
 
-#     # File mode needs to be append! Otherwise we delete the file contents every time we
-#     # execute this script.
-#     with h5py.File(join(args.destination, f"{shotnr}.h5"), "a") as df:
-#         assert(df.mode == "r+")
-#         # Handle each of the three data kinds separately.
-#         # Second scalar data
-#         for pred in dataset_def["predictors"]:
-#             assert(pred in scalars_dict.keys())
-#             if scalars_dict[pred]["type"] == "MDS":
-#                 tree = scalars_dict[pred]["tree"]
-#                 node = scalars_dict[pred]["node"]
-#                 map_to = scalars_dict[pred]["map_to"]
+    # File mode needs to be append! Otherwise we delete the file contents every time we
+    # execute this script.
+    with h5py.File(join(args.destination, f"{shotnr}.h5"), "a") as df:
+        assert(df.mode == "r+")
+        # Handle each of the three data kinds separately.
+        # Second scalar data
+        for pred in dataset_def["predictors"]:
+            assert(pred in scalars_dict.keys())
+            if scalars_dict[pred]["type"] == "MDS":
+                tree = scalars_dict[pred]["tree"]
+                node = scalars_dict[pred]["node"]
+                map_to = scalars_dict[pred]["map_to"]
 
-#                 # Skip the download if there already is data in the HDF5 file
-#                 try:
-#                     if df[map_to]["zdata"].size > 0:
-#                         logging.info(f"Signal {map_to} already exists. Skipping download")
-#                         continue
-#                 except KeyError:
-#                     pass
+                # Skip the download if there already is data in the HDF5 file
+                try:
+                    if df[map_to]["zdata"].size > 0:
+                        logging.info(f"Signal {map_to} already exists. Skipping download")
+                        continue
+                except KeyError:
+                    pass
 
-#                 try:
-#                     logging.info(f"Trying to download {tree}::{node} from MDS")
-#                     conn.openTree(tree, shotnr)
+                try:
+                    logging.info(f"Trying to download {tree}::{node} from MDS")
+                    conn.openTree(tree, shotnr)
 
-#                     zdata = conn.get(f"_s ={node}").data()
-#                     zunits = conn.get('units_of(_s)').data()
-#                     logging.info(f"Downloaded zdata. shape={zdata.shape}")
+                    zdata = conn.get(f"_s ={node}").data()
+                    zunits = conn.get('units_of(_s)').data()
+                    logging.info(f"Downloaded zdata. shape={zdata.shape}")
 
-#                     xdata = conn.get('dim_of(_s)').data()
-#                     xunits = conn.get('units_of(dim_of(_s))').data()
-#                     logging.info(f"Downloaded xdata. shape={xdata.shape}")
-#                 except Exception as err:
-#                     logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
-#                     continue
+                    xdata = conn.get('dim_of(_s)').data()
+                    xunits = conn.get('units_of(dim_of(_s))').data()
+                    logging.info(f"Downloaded xdata. shape={xdata.shape}")
+                except Exception as err:
+                    logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
+                    continue
 
-#                 # Data is now downloaded. Store them in HDF5
-#                 try:
-#                     grp = df.create_group(map_to)
-#                     grp.attrs.create("origin", f"MDS {tree}::{node}")
-#                     # Store data in arrays and set units as an attribute
-#                     for ds_name, ds_data, u_name, u_data in zip(["xdata", "zdata"],
-#                                                                 [xdata, zdata],
-#                                                                 ["xunits", "zunits"],
-#                                                                 [xunits, zunits]):
-#                         dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
-#                         dset[:] = ds_data[:]
-#                         dset.attrs.create(u_name, u_data.encode())
-#                 except Exception as err:
-#                     logging.error(f"Failed to write {tree}::{node} to HDF5 group {grp} - {err}")
-#                     raise(err)
+                # Data is now downloaded. Store them in HDF5
+                try:
+                    grp = df.create_group(map_to)
+                    grp.attrs.create("origin", f"MDS {tree}::{node}")
+                    # Store data in arrays and set units as an attribute
+                    for ds_name, ds_data, u_name, u_data in zip(["xdata", "zdata"],
+                                                                [xdata, zdata],
+                                                                ["xunits", "zunits"],
+                                                                [xunits, zunits]):
+                        dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
+                        dset[:] = ds_data[:]
+                        dset.attrs.create(u_name, u_data.encode())
+                except Exception as err:
+                    logging.error(f"Failed to write {tree}::{node} to HDF5 group {grp} - {err}")
+                    raise(err)
 
-#                 logging.info(f"Stored {tree}::{node} into {grp}")
+                logging.info(f"Stored {tree}::{node} into {grp}")
 
-#             elif scalars_dict[pred]["type"] == "PTDATA":
-#                 node = scalars_dict[pred]["node"]
-#                 map_to = scalars_dict[pred]["map_to"]
-#                 # Skip the download if there already is data in the HDF5 file
-#                 try:
-#                     if df[map_to]["zdata"].size > 0:
-#                         logging.info(f"Signal {map_to} already exists. Skipping download")
-#                         continue
-#                 except KeyError:
-#                     pass
+            elif scalars_dict[pred]["type"] == "PTDATA":
+                node = scalars_dict[pred]["node"]
+                map_to = scalars_dict[pred]["map_to"]
+                # Skip the download if there already is data in the HDF5 file
+                try:
+                    if df[map_to]["zdata"].size > 0:
+                        logging.info(f"Signal {map_to} already exists. Skipping download")
+                        continue
+                except KeyError:
+                    pass
 
-#                 try:
-#                     logging.info(f"Trying to download {node} from PTDATA")
-#                     zdata = conn.get(f"""_s = ptdata2('{node}', {shotnr})""").data()
-#                     xdata = conn.get("dim_of(_s)")
-#                     logging.info(f"Downloaded zdata. shape={zdata.shape}")
-#                     logging.info(f"Downloaded xdata. shape={xdata.shape}")
-#                 except Exception as err:
-#                     logging.error(f"Failed to download {node} from PTDATA - {err}")
-#                     continue
-#              # Data is downloaded. Store them in HDF5
-#                 try:
-#                     grp = df.create_group(f"{scalars_dict[pred]['map_to']}")
-#                     grp.attrs.create("origin", f"PTDATA {node}")
-#                     for ds_name, ds_data in zip(["xdata", "zdata"],
-#                                                 [xdata, zdata]):
-#                         dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
-#                         dset[:] = ds_data[:]
-#                 except Exception as err:
-#                     logging.error(f"Failed to write {node} to HDF5 group {grp} - {err}")
-#                     raise(err)
+                try:
+                    logging.info(f"Trying to download {node} from PTDATA")
+                    zdata = conn.get(f"""_s = ptdata2('{node}', {shotnr})""").data()
+                    xdata = conn.get("dim_of(_s)")
+                    logging.info(f"Downloaded zdata. shape={zdata.shape}")
+                    logging.info(f"Downloaded xdata. shape={xdata.shape}")
+                except Exception as err:
+                    logging.error(f"Failed to download {node} from PTDATA - {err}")
+                    continue
+             # Data is downloaded. Store them in HDF5
+                try:
+                    grp = df.create_group(f"{scalars_dict[pred]['map_to']}")
+                    grp.attrs.create("origin", f"PTDATA {node}")
+                    for ds_name, ds_data in zip(["xdata", "zdata"],
+                                                [xdata, zdata]):
+                        dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
+                        dset[:] = ds_data[:]
+                except Exception as err:
+                    logging.error(f"Failed to write {node} to HDF5 group {grp} - {err}")
+                    raise(err)
 
-#                     logging.info(f"Stored PTDATA {node} into {grp}")
+                    logging.info(f"Stored PTDATA {node} into {grp}")
+
+    break
 # # end of file downloading.py
                                                 
