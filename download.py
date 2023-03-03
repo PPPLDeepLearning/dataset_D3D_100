@@ -68,7 +68,6 @@ with open(args.signal_defs_0d, "r") as stream:
 
 # Open Connection to D3D atlas server
 conn = mds.Connection("atlas.gat.com")
-ctr = 0
 for shotnr in dataset_def["shots"].keys():
     logging.info(f"{shotnr} - Processing")
 
@@ -170,10 +169,6 @@ for shotnr in dataset_def["shots"].keys():
                 tmin = t_k
         logging.info(f"{shotnr}: tmin = {tmin} ms")
         df.attrs.create("tmin", tmin)
-
-    ctr = ctr + 1
-    if ctr > 8:
-        break
 
     
 # # end of file downloading.py

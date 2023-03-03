@@ -76,7 +76,7 @@ if __name__ == "__main__":
         signals_0d = yaml.safe_load(stream)
 
     # Generate list from shots in the dataset
-    shot_list = list(dataset_def["shots"].keys())[:5]
+    shot_list = list(dataset_def["shots"].keys())
 
     # The data is not stored by the alias of the predictor, but under the field `map_to` in signals?.yaml
     # Load the yaml files and find the map_to names that correspond to the field 'predictors' in the 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     group_list = [signals_0d[k]["map_to"] for k in dataset_def["predictors"]]
 
 
-    pool = mp.Pool(5)
+    pool = mp.Pool(12)
     res_mean_std = pool.map(process_variable,  [("D3D_100", grp, shot_list) for grp in group_list])
 
     # all_mean_std is a list of dicts: [{"var1": (mean, std)}, {"var2": (mean, std)}]

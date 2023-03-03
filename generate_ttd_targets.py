@@ -49,7 +49,7 @@ for shotnr in dataset_def["shots"].keys():
 
         grp_t = df.create_group("target_ttd")
         grp_t.create_dataset("xdata", data=tb)
-        grp_t.create_dataset("xdata": data=target)
+        grp_t.create_dataset("zdata", data=target)
 
 
 
