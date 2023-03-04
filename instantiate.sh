@@ -18,4 +18,4 @@ python download.py --dataset_def d3d_100.yaml --signal_defs_0d d3d_signals/signa
 python generate_ttd_targets.py --dataset_def d3d_100.yaml --destination D3D_100
 
 # Calculate mean and std averaged over signals
-python calculate_mean_std.py
+python calculate_mean_std.py --dataset_def d3d_100.yaml --signal_defs_0d d3d_signals/signals_0d.yaml --signal_defs_1d d3d_signals/signals_1d.yaml --destination D3D_100

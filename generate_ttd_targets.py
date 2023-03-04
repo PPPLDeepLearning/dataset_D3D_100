@@ -29,9 +29,17 @@ with open(args.dataset_def, 'r') as fp:
 
 
 for shotnr in dataset_def["shots"].keys():
+    print(shotnr)
     # Iterate over the target variables and find the longest time base
     # of the signals. Use this timebase to generate a ttd target
     with h5py.File(join(args.destination, f"{shotnr}.h5"), "a") as df:
+
+        try:
+            if df["target_ttd"]["xdata"].size > 0:
+                logging.info(f"TTD for shot {shotnr} already exists.")
+                continue
+        except KeyError:
+            pass
 
         # Generate a time-to-disruption target, based on 1ms samples
         tb = np.arange(0.0, df.attrs["tmin"], 1.0)
@@ -50,10 +58,6 @@ for shotnr in dataset_def["shots"].keys():
         grp_t = df.create_group("target_ttd")
         grp_t.create_dataset("xdata", data=tb)
         grp_t.create_dataset("zdata", data=target)
-
-
-
-    break
 
 
 

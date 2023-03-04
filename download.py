@@ -68,7 +68,13 @@ with open(args.signal_defs_0d, "r") as stream:
 
 # Open Connection to D3D atlas server
 conn = mds.Connection("atlas.gat.com")
-for shotnr in dataset_def["shots"].keys():
+
+shotlist = list(dataset_def["shots"].keys())
+
+logging.info(f"Processing shots {shotlist}")
+
+
+for shotnr in shotlist:
     logging.info(f"{shotnr} - Processing")
 
     # File mode needs to be append! Otherwise we delete the file contents every time we
@@ -86,9 +92,9 @@ for shotnr in dataset_def["shots"].keys():
 
                 # Skip the download if there already is data in the HDF5 file
                 try:
-                    if df[map_to]["zdata"].size > 0:
-                        logging.info(f"Signal {map_to} already exists. Skipping download")
-                        continue
+                    df[map_to]
+                    logging.info(f"Signal {map_to} already exists. Skipping download")
+                    continue
                 except KeyError:
                     pass
 
@@ -105,7 +111,7 @@ for shotnr in dataset_def["shots"].keys():
                     logging.info(f"Downloaded xdata. shape={xdata.shape}")
                 except Exception as err:
                     logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
-                    continue
+                    raise err
 
                 # Data is now downloaded. Store them in HDF5
                 try:
@@ -120,7 +126,7 @@ for shotnr in dataset_def["shots"].keys():
                         dset[:] = ds_data[:]
                         dset.attrs.create(u_name, u_data.encode())
                 except Exception as err:
-                    logging.error(f"Failed to write {tree}::{node} to HDF5 group {grp} - {err}")
+                    logging.error(f"Failed to write {tree}::{node} to HDF5 - {err}")
                     raise(err)
 
                 logging.info(f"Stored {tree}::{node} into {grp}")
@@ -157,7 +163,7 @@ for shotnr in dataset_def["shots"].keys():
                     logging.error(f"Failed to write {node} to HDF5 group {grp} - {err}")
                     raise(err)
 
-                    logging.info(f"Stored PTDATA {node} into {grp}")
+                logging.info(f"Stored PTDATA {node} into {grp}")
 
         # Iterate over all predictors and find the shortest time-base
         tmin = 100_000

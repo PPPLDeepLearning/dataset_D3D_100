@@ -65,6 +65,9 @@ if __name__ == "__main__":
     parser.add_argument("--signal_defs_0d", type=str,
         default="signals_0d.yaml",
         help="YAML file that contains 0d signal informations")
+    parser.add_argument("--signal_defs_1d", type=str,
+        default="signals_1d.yaml",
+        help="YAML file that contains 1d signal informations")
 
     args = parser.parse_args()
 
