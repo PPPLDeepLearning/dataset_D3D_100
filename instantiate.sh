@@ -19,3 +19,7 @@ python generate_ttd_targets.py --dataset_def d3d_100.yaml --destination D3D_100
 
 # Calculate mean and std averaged over signals
 python calculate_mean_std.py --dataset_def d3d_100.yaml --signal_defs_0d d3d_signals/signals_0d.yaml --signal_defs_1d d3d_signals/signals_1d.yaml --destination D3D_100
+
+# Compile tmin from HDF5 files / dataset definition and write to yaml file
+python compile_tmin.py --dataset_def d3d_100.yaml  --destination D3D_100
+
