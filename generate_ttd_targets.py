@@ -47,7 +47,7 @@ for shotnr in dataset_def["shots"].keys():
         if dataset_def["shots"][shotnr]["ttd"] < 0.0:
             # Shot is disruptive, target is now a count-down
             target = tb.max() - tb
-            taret = np.clip(target, 0.0, dataset_def["ttd_max"])
+            target = np.clip(target, 0.0, dataset_def["ttd_max"])
         else:
             # Shot is not disruptive. TTD is ttd_max (defined in yaml file)
             target = dataset_def["ttd_max"] * np.ones_like(tb)        
