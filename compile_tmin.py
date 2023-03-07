@@ -11,16 +11,20 @@ import h5py
 
 
 # Compile tmin from HDF5 files into yaml files
-def get_tmin(shotnr, datadir):
-    """Return tmin attribute from HDF5 file.
+def get_tmin_tmax(shotnr, datadir):
+    """Return tmax attribute from HDF5 file.
 
     shotnr (int) : Shot number file
     datadir (str) : Directory of the HDF5 files.
     """
     with h5py.File(join(datadir, f"{shotnr}.h5"), 'r') as df:
         tmin = df.attrs["tmin"]
+        tmax = df.attrs["tmax"]
+        
     # Cast to float so that yaml can pickle this item later on.
-    return float(tmin)
+    return float(tmin), float(tmax)
+
+
 
 
 if __name__ == "__main__":
@@ -47,21 +51,25 @@ if __name__ == "__main__":
     # Generate list from shots in the dataset
     shot_list = list(dataset_def["shots"].keys())
 
-    tmin_dict = {}
+    t_min_max_dict = {}
     for shotnr in shot_list:
-        if dataset_def["shots"][shotnr]["ttd"] < 0.0:
-            tmin_dict.update({shotnr: get_tmin(shotnr, args.destination)})
-        else:
-            # Cast value to float so that yaml can pickle this later on
-            tmin_dict.update({shotnr: float(dataset_def["shots"][shotnr]["ttd"])})
+        tmin, tmax = get_tmin_tmax(shotnr, args.destination)
+        print(f"========== {shotnr} ========")
+        if dataset_def["shots"][shotnr]["ttd"] > 0.0:
+            tmax = float(dataset_def["shots"][shotnr]["ttd"])
+
+        print(f"    tmin={tmin}, tmax={tmax}")    
 
 
-    with open("shots_tmax.yaml", "w") as fp:
-        fp.write(yaml.safe_dump(tmin_dict))
+        t_min_max_dict.update({shotnr: {"tmin": float(tmin), "tmax": float(tmax)}})
+
+
+    with open("shots_t_min_max.yaml", "w") as fp:
+        fp.write(yaml.safe_dump(t_min_max_dict))
     
 
 
 
 
 
-# end of file calculate_mean_std.py
+# end of file compile_tmin.py

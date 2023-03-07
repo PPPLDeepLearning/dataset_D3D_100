@@ -166,12 +166,23 @@ for shotnr in shotlist:
                 logging.info(f"Stored PTDATA {node} into {grp}")
 
         # Iterate over all predictors and find the shortest time-base
-        tmin = 100_000
+        tmax = 100_000
         for k in df.keys():
             if k == "target_ttd":
                 continue
             t_k = df[k]["xdata"][-1]
-            if t_k < tmin:
+            if t_k < tmax:
+                tmax = t_k
+        logging.info(f"{shotnr}: tmax = {tmax} ms")
+        df.attrs.create("tmax", tmax)
+
+
+        tmin = -100.0
+        for k in df.keys():
+            if k == "target_ttd":
+                continue
+            t_k = df[k]["xdata"][0]
+            if t_k > tmin:
                 tmin = t_k
         logging.info(f"{shotnr}: tmin = {tmin} ms")
         df.attrs.create("tmin", tmin)
