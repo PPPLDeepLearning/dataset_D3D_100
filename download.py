@@ -184,15 +184,17 @@ for shotnr in shotlist:
                         # scalars and profiles
                         zdata = conn.get(f"_s ={node}").data().T
                         zunits = conn.get('units_of(_s)').data()
-                        logging.info(f"Downloaded zdata. shape={zdata.shape}")
+                        logging.info(f"Downloaded zdata. shape={zdata.shape} units={zunits}")
 
-                        xdata = conn.get('dim_of(_s)').data()
-                        xunits = conn.get('units_of(dim_of(_s))').data()
-                        logging.info(f"Downloaded xdata. shape={xdata.shape}")
+                        # Remember that dim0 in MDS is rho for the profiles. 
+                        # This here should be rho/psi in mm
+                        ydata = conn.get('dim_of(_s)').data()
+                        yunits = conn.get('units_of(dim_of(_s))').data()
+                        logging.info(f"Downloaded xdata. shape={ydata.shape}, xunits={yunits}")
 
-                        ydata = conn.get('dim_of(_s, 1)').data()
-                        yunits = conn.get('units_of(dim_of(_s, 1))').data()
-                        logging.info(f"Downloaded ydata. shape={xdata.shape}")
+                        xdata = conn.get('dim_of(_s, 1)').data()
+                        xunits = conn.get('units_of(dim_of(_s, 1))').data()
+                        logging.info(f"Downloaded ydata. shape={xdata.shape}, yunits={xunits}")
 
 
                     except Exception as err:
@@ -241,7 +243,7 @@ for shotnr in shotlist:
         logging.info(f"{shotnr}: tmin = {tmin} ms")
         df.attrs.create("tmin", tmin)
 
-        break
+        #break
 
     
 # # end of file downloading.py

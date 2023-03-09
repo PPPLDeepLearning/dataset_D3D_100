@@ -17,6 +17,7 @@ predictors:
   - ipsiptargt
   - ipeecoil
   - edensfit
+  - etempfit
 
 shots:
   167475:
@@ -43,8 +44,7 @@ shots:
     ttd: -1.0
   167495:
     ttd: -1.0
-  167499:
-    ttd: -1.0
+
   167502:
     ttd: -1.0
   167504:
@@ -107,8 +107,6 @@ shots:
     ttd: -1.0
   167547:
     ttd: -1.0
-  167548:
-    ttd: -1.0
   167549:
     ttd: -1.0
   167551:
@@ -169,34 +167,6 @@ shots:
     ttd: -1.0
   167618:
     ttd: -1.0
-  168451:
-    ttd: -1.0
-  168500:
-    ttd: -1.0
-  168504:
-    ttd: -1.0
-  168516:
-    ttd: -1.0
-  168519:
-    ttd: -1.0
-  168529:
-    ttd: -1.0
-  168530:
-    ttd: -1.0
-  168534:
-    ttd: -1.0
-  168536:
-    ttd: -1.0
-  168537:
-    ttd: -1.0
-  168544:
-    ttd: -1.0
-  168548:
-    ttd: -1.0
-  168551:
-    ttd: -1.0
-  168554:
-    ttd: -1.0
   167480:
     ttd: 5059.0
   167487:
@@ -211,8 +181,6 @@ shots:
     ttd: 6379.0
   167497:
     ttd: 6663.0
-  167498:
-    ttd: 6497.0
   167500:
     ttd: 5281.0
   167501:
@@ -289,104 +257,7 @@ shots:
     ttd: 4916.0
   167621:
     ttd: 4590.0
-  167622:
-    ttd: 2778.0
-  168445:
-    ttd: 2576.0
-  168446:
-    ttd: 1405.0
-  168447:
-    ttd: 1776.0
-  168448:
-    ttd: 2082.0
-  168449:
-    ttd: 1831.0
-  168489:
-    ttd: 714.0
-  168492:
-    ttd: 2338.0
-  168493:
-    ttd: 2316.0
-  168494:
-    ttd: 2341.0
-  168495:
-    ttd: 4422.0
-  168501:
-    ttd: 4676.0
-  168502:
-    ttd: 6203.0
-  168503:
-    ttd: 5755.0
-  168505:
-    ttd: 4525.0
-  168506:
-    ttd: 5711.0
-  168507:
-    ttd: 6390.0
-  168508:
-    ttd: 6281.0
-  168509:
-    ttd: 6097.0
-  168510:
-    ttd: 3070.0
-  168511:
-    ttd: 6675.0
-  168512:
-    ttd: 2955.0
-  168513:
-    ttd: 6267.0
-  168514:
-    ttd: 940.0
-  168515:
-    ttd: 7020.0
-  168517:
-    ttd: 2807.0
-  168518:
-    ttd: 7039.0
-  168520:
-    ttd: 6258.0
-  168521:
-    ttd: 6160.0
-  168522:
-    ttd: 6134.0
-  168527:
-    ttd: 7124.0
-  168528:
-    ttd: 6484.0
-  168531:
-    ttd: 6278.0
-  168532:
-    ttd: 6127.0
-  168533:
-    ttd: 7128.0
-  168538:
-    ttd: 6271.0
-  168539:
-    ttd: 7039.0
-  168540:
-    ttd: 6139.0
-  168541:
-    ttd: 6132.0
-  168542:
-    ttd: 6280.0
-  168543:
-    ttd: 7031.0
-  168545:
-    ttd: 6141.0
-  168546:
-    ttd: 6151.0
-  168547:
-    ttd: 6142.0
-  168549:
-    ttd: 7032.0
-  168550:
-    ttd: 6307.0
-  168552:
-    ttd: 7019.0
-  168553:
-    ttd: 6141.0
-  168555:
-    ttd: 6704.0
+
 
 
 shots_bad:
@@ -404,3 +275,201 @@ shots_bad:
     ttd: -1.0
   168486:
     ttd: 0.820
+  167499:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  167548:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168451:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168500:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168504:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168516:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168519:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168529:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168530:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168534:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168536:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168537:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168544:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168548:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168551:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  168554:
+    ttd: -1.0
+    comment: "ZIPFIT unavailable"
+  167498:
+    ttd: 6497.0
+    comment: "ZIPFIT unavailable"
+  167622:
+    ttd: 2778.0
+    comment: "ZIPFIT unavailable"
+  168445:
+    ttd: 2576.0
+    comment: "ZIPFIT unavailable"
+  168446:
+    ttd: 1405.0
+    comment: "ZIPFIT unavailable"
+  168447:
+    ttd: 1776.0
+    comment: "ZIPFIT unavailable"
+  168448:
+    ttd: 2082.0
+    comment: "ZIPFIT unavailable"
+  168449:
+    ttd: 1831.0
+    comment: "ZIPFIT unavailable"
+  168489:
+    ttd: 714.0
+    comment: "ZIPFIT unavailable"
+  168492:
+    ttd: 2338.0
+    comment: "ZIPFIT unavailable"
+  168493:
+    ttd: 2316.0
+    comment: "ZIPFIT unavailable"
+  168494:
+    ttd: 2341.0
+    comment: "ZIPFIT unavailable"
+  168495:
+    ttd: 4422.0
+    comment: "ZIPFIT unavailable"
+  168501:
+    ttd: 4676.0
+    comment: "ZIPFIT unavailable"
+  168502:
+    ttd: 6203.0 
+    comment: "ZIPFIT unavailable"
+  168503:
+    ttd: 5755.0
+    comment: "ZIPFIT unavailable"
+  168505:
+    ttd: 4525.0
+    comment: "ZIPFIT unavailable"
+  168506:
+    ttd: 5711.0
+    comment: "ZIPFIT unavailable"
+  168507:
+    ttd: 6390.0
+    comment: "ZIPFIT unavailable"
+  168508:
+    ttd: 6281.0
+    comment: "ZIPFIT unavailable"
+  168509:
+    ttd: 6097.0
+    comment: "ZIPFIT unavailable"
+  168510:
+    ttd: 3070.0
+    comment: "ZIPFIT unavailable"
+  168511:
+    ttd: 6675.0
+    comment: "ZIPFIT unavailable"
+  168512:
+    ttd: 2955.0
+    comment: "ZIPFIT unavailable"
+  168513:
+    ttd: 6267.0
+    comment: "ZIPFIT unavailable"
+  168514:
+    ttd: 940.0
+    comment: "ZIPFIT unavailable"
+  168515:
+    ttd: 7020.0
+    comment: "ZIPFIT unavailable"
+  168517:
+    ttd: 2807.0
+    comment: "ZIPFIT unavailable"
+  168518:
+    ttd: 7039.0
+    comment: "ZIPFIT unavailable"
+  168520:
+    ttd: 6258.0
+    comment: "ZIPFIT unavailable"
+  168521:
+    ttd: 6160.0
+    comment: "ZIPFIT unavailable"
+  168522:
+    ttd: 6134.0
+    comment: "ZIPFIT unavailable"
+  168527:
+    ttd: 7124.0
+    comment: "ZIPFIT unavailable"
+  168528:
+    ttd: 6484.0
+    comment: "ZIPFIT unavailable"
+  168531:
+    ttd: 6278.0
+    comment: "ZIPFIT unavailable"
+  168532:
+    ttd: 6127.0
+    comment: "ZIPFIT unavailable"
+  168533:
+    ttd: 7128.0
+    comment: "ZIPFIT unavailable"
+  168538:
+    ttd: 6271.0
+    comment: "ZIPFIT unavailable"
+  168539:
+    ttd: 7039.0
+    comment: "ZIPFIT unavailable"
+  168540:
+    ttd: 6139.0
+    comment: "ZIPFIT unavailable"
+  168541:
+    ttd: 6132.0
+    comment: "ZIPFIT unavailable"
+  168542:
+    ttd: 6280.0
+    comment: "ZIPFIT unavailable"
+  168543:
+    ttd: 7031.0
+    comment: "ZIPFIT unavailable"
+  168545:
+    ttd: 6141.0
+    comment: "ZIPFIT unavailable"
+  168546:
+    ttd: 6151.0
+    comment: "ZIPFIT unavailable"
+  168547:
+    ttd: 6142.0
+    comment: "ZIPFIT unavailable"
+  168549:
+    ttd: 7032.0
+    comment: "ZIPFIT unavailable"
+  168550:
+    ttd: 6307.0
+    comment: "ZIPFIT unavailable"
+  168552:
+    ttd: 7019.0
+    comment: "ZIPFIT unavailable"
+  168553:
+    ttd: 6141.0
+    comment: "ZIPFIT unavailable"
+  168555:
+    ttd: 6704.0
+    comment: "ZIPFIT unavailable"
