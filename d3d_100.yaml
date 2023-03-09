@@ -16,6 +16,7 @@ predictors:
   - bmstinj
   - ipsiptargt
   - ipeecoil
+  - edensfit
 
 shots:
   167475:

@@ -47,24 +47,24 @@ os.environ["main_path"] = "atlas.gat.com::"
 with open(args.dataset_def, "r") as stream:
     dataset_def = yaml.safe_load(stream)
 
-## Separate between three kinds of data. Each kind requires separate download logic, 
-## to pull from from either MDS or PTDATA, and handle 0d vs 1d
-## The first kind are profiles. These are 1d time series.
-## Each entry is a dict with 
-##   Tree - The name of the MDS tree the data is stored in
-##   Node - The name of the MDS node the data is stored in
-##   map_to - The group in the HDF5 file the data will be stored in
-#
-with open(args.signal_defs_1d, "r") as stream:
-    profile_dict = yaml.safe_load(stream)
-#
-## The second kind are scalar time series, i.e. 0d time series.
-## Each entry is a dict with 
-##   Tree - The name of the MDS tree the data is stored in
-##   Node - The name of the MDS node the data is stored in
-##   map_to - The group in the HDF5 file the data will be stored in
+
+
+# Separate between three kinds of data. Each kind requires separate download logic, 
+# to pull from from either MDS or PTDATA, and handle 0d vs 1d
+
+# The first and second kind are scalar time series, i.e. 0d time series.
+# These live either in MDS or PTdata.
+# For MDS, each entry is a dict with 
+#   Tree - The name of the MDS tree the data is stored in
+#   Node - The name of the MDS node the data is stored in
+#   map_to - The group in the HDF5 file the data will be stored in
 with open(args.signal_defs_0d, "r") as stream:
     scalars_dict = yaml.safe_load(stream)
+
+# The second kind are profiles. These are 1d time series from MDS.
+with open(args.signal_defs_1d, "r") as stream:
+    profile_dict = yaml.safe_load(stream)
+
 
 # Open Connection to D3D atlas server
 conn = mds.Connection("atlas.gat.com")
@@ -84,86 +84,140 @@ for shotnr in shotlist:
         # Handle each of the three data kinds separately.
         # Second scalar data
         for pred in dataset_def["predictors"]:
-            assert(pred in scalars_dict.keys())
-            if scalars_dict[pred]["type"] == "MDS":
-                tree = scalars_dict[pred]["tree"]
-                node = scalars_dict[pred]["node"]
-                map_to = scalars_dict[pred]["map_to"]
-
-                # Skip the download if there already is data in the HDF5 file
-                try:
-                    df[map_to]
-                    logging.info(f"Signal {map_to} already exists. Skipping download")
-                    continue
-                except KeyError:
-                    pass
-
-                try:
-                    logging.info(f"Trying to download {tree}::{node} from MDS")
-                    conn.openTree(tree, shotnr)
-
-                    zdata = conn.get(f"_s ={node}").data()
-                    zunits = conn.get('units_of(_s)').data()
-                    logging.info(f"Downloaded zdata. shape={zdata.shape}")
-
-                    xdata = conn.get('dim_of(_s)').data()
-                    xunits = conn.get('units_of(dim_of(_s))').data()
-                    logging.info(f"Downloaded xdata. shape={xdata.shape}")
-                except Exception as err:
-                    logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
-                    raise err
-
-                # Data is now downloaded. Store them in HDF5
-                try:
-                    grp = df.create_group(map_to)
-                    grp.attrs.create("origin", f"MDS {tree}::{node}")
-                    # Store data in arrays and set units as an attribute
-                    for ds_name, ds_data, u_name, u_data in zip(["xdata", "zdata"],
-                                                                [xdata, zdata],
-                                                                ["xunits", "zunits"],
-                                                                [xunits, zunits]):
-                        dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
-                        dset[:] = ds_data[:]
-                        dset.attrs.create(u_name, u_data.encode())
-                except Exception as err:
-                    logging.error(f"Failed to write {tree}::{node} to HDF5 - {err}")
-                    raise(err)
-
-                logging.info(f"Stored {tree}::{node} into {grp}")
-
-            elif scalars_dict[pred]["type"] == "PTDATA":
-                node = scalars_dict[pred]["node"]
-                map_to = scalars_dict[pred]["map_to"]
-                # Skip the download if there already is data in the HDF5 file
-                try:
-                    if df[map_to]["zdata"].size > 0:
+            if pred in scalars_dict.keys():
+                if scalars_dict[pred]["type"] == "MDS":
+                    tree = scalars_dict[pred]["tree"]
+                    node = scalars_dict[pred]["node"]
+                    map_to = scalars_dict[pred]["map_to"]
+                    # Skip the download if there already is data in the HDF5 file
+                    try:
+                        df[map_to]
                         logging.info(f"Signal {map_to} already exists. Skipping download")
                         continue
-                except KeyError:
-                    pass
+                    except KeyError:
+                        pass
 
-                try:
-                    logging.info(f"Trying to download {node} from PTDATA")
-                    zdata = conn.get(f"""_s = ptdata2('{node}', {shotnr})""").data()
-                    xdata = conn.get("dim_of(_s)")
-                    logging.info(f"Downloaded zdata. shape={zdata.shape}")
-                    logging.info(f"Downloaded xdata. shape={xdata.shape}")
-                except Exception as err:
-                    logging.error(f"Failed to download {node} from PTDATA - {err}")
-                    continue
-             # Data is downloaded. Store them in HDF5
-                try:
-                    grp = df.create_group(f"{scalars_dict[pred]['map_to']}")
-                    grp.attrs.create("origin", f"PTDATA {node}")
-                    for ds_name, ds_data in zip(["xdata", "zdata"],
-                                                [xdata, zdata]):
-                        dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
-                        dset[:] = ds_data[:]
-                except Exception as err:
-                    logging.error(f"Failed to write {node} to HDF5 group {grp} - {err}")
-                    raise(err)
+                    try:
+                        logging.info(f"Trying to download {tree}::{node} from MDS")
+                        conn.openTree(tree, shotnr)
 
-                logging.info(f"Stored PTDATA {node} into {grp}")
+                        zdata = conn.get(f"_s ={node}").data()
+                        zunits = conn.get('units_of(_s)').data()
+                        logging.info(f"Downloaded zdata. shape={zdata.shape}")
+
+                        xdata = conn.get('dim_of(_s)').data()
+                        xunits = conn.get('units_of(dim_of(_s))').data()
+                        logging.info(f"Downloaded xdata. shape={xdata.shape}")
+                    except Exception as err:
+                        logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
+                        raise err
+
+                    # Data is now downloaded. Store them in HDF5
+                    try:
+                        grp = df.create_group(map_to)
+                        grp.attrs.create("origin", f"MDS {tree}::{node}")
+                        # Store data in arrays and set units as an attribute
+                        for ds_name, ds_data, u_name, u_data in zip(["xdata", "zdata"],
+                                                                    [xdata, zdata],
+                                                                    ["xunits", "zunits"],
+                                                                    [xunits, zunits]):
+                            dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
+                            dset[:] = ds_data[:]
+                            dset.attrs.create(u_name, u_data.encode())
+                    except Exception as err:
+                        logging.error(f"Failed to write {tree}::{node} to HDF5 - {err}")
+                        raise(err)
+
+                    logging.info(f"Stored {tree}::{node} into {grp}")
+
+                elif scalars_dict[pred]["type"] == "PTDATA":
+                    node = scalars_dict[pred]["node"]
+                    map_to = scalars_dict[pred]["map_to"]
+                    # Skip the download if there already is data in the HDF5 file
+                    try:
+                        if df[map_to]["zdata"].size > 0:
+                            logging.info(f"Signal {map_to} already exists. Skipping download")
+                            continue
+                    except KeyError:
+                        pass
+
+                    try:
+                        logging.info(f"Trying to download {node} from PTDATA")
+                        zdata = conn.get(f"""_s = ptdata2('{node}', {shotnr})""").data()
+                        xdata = conn.get("dim_of(_s)")
+                        logging.info(f"Downloaded zdata. shape={zdata.shape}")
+                        logging.info(f"Downloaded xdata. shape={xdata.shape}")
+                    except Exception as err:
+                        logging.error(f"Failed to download {node} from PTDATA - {err}")
+                        continue
+                # Data is downloaded. Store them in HDF5
+                    try:
+                        grp = df.create_group(f"{scalars_dict[pred]['map_to']}")
+                        grp.attrs.create("origin", f"PTDATA {node}")
+                        for ds_name, ds_data in zip(["xdata", "zdata"],
+                                                    [xdata, zdata]):
+                            dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
+                            dset[:] = ds_data[:]
+                    except Exception as err:
+                        logging.error(f"Failed to write {node} to HDF5 group {grp} - {err}")
+                        raise(err)
+
+                    logging.info(f"Stored PTDATA {node} into {grp}")
+
+            elif pred in profile_dict.keys():
+                    tree = profile_dict[pred]["tree"]
+                    node = profile_dict[pred]["node"]
+                    map_to = profile_dict[pred]["map_to"]
+                    # Skip the download if there already is data in the HDF5 file
+                    try:
+                        df[map_to]
+                        logging.info(f"Signal {map_to} already exists. Skipping download")
+                        continue
+                    except KeyError:
+                        pass
+
+                    try:
+                        logging.info(f"Trying to download {tree}::{node} from MDS")
+                        conn.openTree(tree, shotnr)
+
+                        # This is the profile. Remember to transpose to have dim0 being time consistently across
+                        # scalars and profiles
+                        zdata = conn.get(f"_s ={node}").data().T
+                        zunits = conn.get('units_of(_s)').data()
+                        logging.info(f"Downloaded zdata. shape={zdata.shape}")
+
+                        xdata = conn.get('dim_of(_s)').data()
+                        xunits = conn.get('units_of(dim_of(_s))').data()
+                        logging.info(f"Downloaded xdata. shape={xdata.shape}")
+
+                        ydata = conn.get('dim_of(_s, 1)').data()
+                        yunits = conn.get('units_of(dim_of(_s, 1))').data()
+                        logging.info(f"Downloaded ydata. shape={xdata.shape}")
+
+
+                    except Exception as err:
+                        logging.error(f"Failed to download {tree}::{node} from MDS - {err}")
+                        raise err
+
+                    # Data is now downloaded. Store them in HDF5
+                    try:
+                        grp = df.create_group(map_to)
+                        grp.attrs.create("origin", f"MDS {tree}::{node}")
+                        # Store data in arrays and set units as an attribute
+                        for ds_name, ds_data, u_name, u_data in zip(["xdata", "ydata", "zdata"],
+                                                                    [xdata, ydata, zdata],
+                                                                    ["xunits", "yunits", "zunits"],
+                                                                    [xunits, yunits, zunits]):
+                            dset = grp.create_dataset(ds_name, ds_data.shape, dtype='f')
+                            dset[:] = ds_data[:]
+                            dset.attrs.create(u_name, u_data.encode())
+                    except Exception as err:
+                        logging.error(f"Failed to write {tree}::{node} to HDF5 - {err}")
+                        raise(err)
+
+                    logging.info(f"Stored {tree}::{node} into {grp}")
+            else:
+                raise ValueError("Couldn't find {pred} in either scalar of profile data description.")
 
         # Iterate over all predictors and find the shortest time-base
         tmax = 100_000
@@ -186,6 +240,8 @@ for shotnr in shotlist:
                 tmin = t_k
         logging.info(f"{shotnr}: tmin = {tmin} ms")
         df.attrs.create("tmin", tmin)
+
+        break
 
     
 # # end of file downloading.py
