@@ -9,6 +9,8 @@ import yaml
 from os.path import join
 import h5py
 
+import importlib.resources
+import d3d_signals
 
 
 """
@@ -76,12 +78,6 @@ if __name__ == "__main__":
         help="YAML file that contains definition of the dataset")
     parser.add_argument("--destination", type=str,
         help="Destination for Dataset HDF5 files")
-    parser.add_argument("--signal_defs_0d", type=str,
-        default="signals_0d.yaml",
-        help="YAML file that contains 0d signal informations")
-    parser.add_argument("--signal_defs_1d", type=str,
-        default="signals_1d.yaml",
-        help="YAML file that contains 1d signal informations")
 
     args = parser.parse_args()
 
@@ -93,12 +89,13 @@ if __name__ == "__main__":
     # Load the yaml files and find the map_to names that correspond to the field 'predictors' in the
     # dataset definition
 
-    # Load mappings for 0d signals
-    with open(args.signal_defs_0d, "r") as stream:
-        signals_0d = yaml.safe_load(stream)
-    # Load mappings for 1d (profile) signals
-    with open(args.signal_defs_1d, "r") as stream:
-        signals_1d = yaml.safe_load(stream)
+    resource_path = importlib.resources.files("d3d_signals")
+
+    with open(join(resource_path, "signals_0d.yaml"), "r") as fp:
+        signals_0d = yaml.safe_load(fp)
+    with open(join(resource_path, "signals_1d.yaml"), "r") as fp:
+        signals_1d = yaml.safe_load(fp)
+
 
     # Gather the name of the predictor and the corresponding HDF5 group names 
     # of the predictors listed in the definition of the dataset.

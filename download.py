@@ -17,6 +17,10 @@ import yaml
 
 import argparse
 
+import d3d_signals
+resource_path = importlib.resources.files("d3d_signals")
+
+
 logging.basicConfig(filename="instantiate.log",
                     format="%(asctime)s    %(message)s",
                     encoding="utf-8",
@@ -27,12 +31,6 @@ parser = argparse.ArgumentParser(
     description="Downloads D3D datasets according to yaml description")
 parser.add_argument("--dataset_def", type=str,
     help="YAML file that contains definition of the dataset")
-parser.add_argument("--signal_defs_0d", type=str,
-    default="signals_0d.yaml",
-    help="YAML file that contains 0d signal informations")
-parser.add_argument("--signal_defs_1d", type=str,
-    default="signals_1d.yaml",
-    help="YAML file that contains 1d signal informations")
 parser.add_argument("--destination", type=str,
     help="Destination for Dataset HDF5 files")
 
@@ -58,12 +56,15 @@ with open(args.dataset_def, "r") as stream:
 #   Tree - The name of the MDS tree the data is stored in
 #   Node - The name of the MDS node the data is stored in
 #   map_to - The group in the HDF5 file the data will be stored in
-with open(args.signal_defs_0d, "r") as stream:
-    scalars_dict = yaml.safe_load(stream)
+
+resource_path = importlib.resources.files("d3d_signals")
+
+with open(join(resource_path, "signals_0d.yaml"), "r") as fp:
+    signals_0d = yaml.safe_load(fp)
 
 # The second kind are profiles. These are 1d time series from MDS.
-with open(args.signal_defs_1d, "r") as stream:
-    profile_dict = yaml.safe_load(stream)
+with open(join(resource_path, "signals_1d.yaml"), "r") as fp:
+    signals_1d = yaml.safe_load(fp)
 
 
 # Open Connection to D3D atlas server
